@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bán hàng</title>
+    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/svg+xml">
+    <link rel="stylesheet" href="./style.css">
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <table>
+                <caption>BÁN HÀNG</caption>
+                <caption id="priceFilterInfo" class="price-filter-info">
+                    <label for="priceFilter">Lọc theo giá:</label>
+                    <select id="priceFilter">
+                        <option value="0">Tất cả</option>
+                        <option value="1000000">Dưới 1.000.000 VND</option>
+                        <option value="2000000">Dưới 2.000.000 VND</option>
+                        <option value="3000000">Dưới 3.000.000 VND</option>
+                        <option value="4000000">Dưới 4.000.000 VND</option>
+                        <option value="5000000">Dưới 5.000.000 VND</option>
+                    </select>
+                </caption>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="chonhet"></th>
+                        <th>Hàng hóa</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Nike Zoom Fly 5</td>
+                        <td value="4699000">4.699.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Jordan One Take 4 PF</td>
+                        <td value="2929000">2.929.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Nike Air Max 90</td>
+                        <td value="3.519.000">3.519.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Nike G.T. Jump 2 EP</td>
+                        <td value="5.279.000">5.279.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>KD15 EP</td>
+                        <td value="4.409.000">4.409.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Nike Air Force 1 '07</td>
+                        <td value="3.829.000">3.829.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Nike React Pegasus Trail 4 SE</td>
+                        <td value="3.829.000">3.829.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" class="chon"></td>
+                        <td>Cosmic Unity 3</td>
+                        <td value="4.409.000">4.409.000</td>
+                        <td><input type="number" name="" id=""></td>
+                        <td><span></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style=" font-weight: bolder;">TỔNG</td>
+                        <td><span></span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        const priceFilter = document.getElementById('priceFilter');
+        priceFilter.addEventListener('change', function () {
+            const selectedPrice = parseInt(this.value);
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const priceElement = row.querySelector('td[value]');
+                const price = parseFloat(priceElement.getAttribute('value').replace(/\./g, ''));
+
+                if (selectedPrice === 0 || price <= selectedPrice) {
+                    row.style.display = 'table-row'; // Hiển thị hàng nếu giá thỏa mãn điều kiện
+                } else {
+                    row.style.display = 'none'; // Ẩn hàng nếu giá không thỏa mãn điều kiện
+                }
+            });
+        });
+
+        // Lắng nghe sự kiện khi checkbox "chonhet" thay đổi
+        const selectAllCheckbox = document.getElementById('chonhet');
+        selectAllCheckbox.addEventListener('change', function () {
+            const allCheckboxes = document.querySelectorAll('tbody input[type="checkbox"].chon');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked; // Đặt trạng thái cho tất cả checkbox bên dưới dựa trên checkbox "chonhet"
+                const quantityInput = checkbox.closest('tr').querySelector('input[type="number"]');
+                const priceElement = checkbox.closest('tr').querySelector('td[value]');
+                const totalElement = checkbox.closest('tr').querySelector('td span');
+                if (this.checked) {
+                    quantityInput.value = 1; // Nếu checkbox được chọn, đặt số lượng thành 1
+                    calculateTotal(quantityInput, priceElement, totalElement);
+                } else {
+                    quantityInput.value = 0; // Nếu checkbox được bỏ chọn, đặt số lượng thành 0
+                    totalElement.textContent = '';
+                }
+                calculateGrandTotal(); // Tính lại tổng số tiền khi có sự thay đổi
+            });
+        });
+
+        // Lắng nghe sự kiện khi số lượng thay đổi
+        const quantityInputs = document.querySelectorAll('tbody input[type="number"]');
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', function () {
+                const checkbox = this.closest('tr').querySelector('input[type="checkbox"]');
+                const priceElement = this.closest('tr').querySelector('td[value]');
+                const totalElement = this.closest('tr').querySelector('td span');
+                checkbox.checked = this.value > 0; // Tích chọn nếu số lượng lớn hơn 0
+                calculateTotal(this, priceElement, totalElement);
+                calculateGrandTotal(); // Tính lại tổng số tiền khi có sự thay đổi
+            });
+        });
+
+        // Lắng nghe sự kiện khi checkbox "chon" thay đổi
+        const individualCheckboxes = document.querySelectorAll('tbody input[type="checkbox"].chon');
+        individualCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const quantityInput = this.closest('tr').querySelector('input[type="number"]');
+                const priceElement = this.closest('tr').querySelector('td[value]');
+                const totalElement = this.closest('tr').querySelector('td span');
+                if (this.checked) {
+                    quantityInput.value = 1; // Nếu checkbox được chọn, đặt số lượng thành 1
+                } else {
+                    quantityInput.value = 0; // Nếu checkbox được bỏ chọn, đặt số lượng thành 0
+                    totalElement.textContent = '';
+                }
+                calculateTotal(quantityInput, priceElement, totalElement);
+                calculateGrandTotal(); // Tính lại tổng số tiền khi có sự thay đổi
+            });
+        });
+
+        // Hàm tính tổng tiền dựa trên số lượng và đơn giá
+        function calculateTotal(quantityInput, priceElement, totalElement) {
+            const quantity = parseInt(quantityInput.value);
+            const price = parseFloat(priceElement.getAttribute('value').replace(/\./g, ''));
+            const total = quantity * price;
+            totalElement.textContent = formatCurrency(total);
+        }
+
+        // Hàm tính tổng số tiền của tất cả các mặt hàng đã chọn
+        function calculateGrandTotal() {
+            const selectedCheckboxes = document.querySelectorAll('tbody input[type="checkbox"].chon:checked');
+            let grandTotal = 0;
+            selectedCheckboxes.forEach(checkbox => {
+                const totalElement = checkbox.closest('tr').querySelector('td span');
+                if (totalElement.textContent) {
+                    grandTotal += parseFloat(totalElement.textContent.replace(/\D+/g, ''));
+                }
+            });
+
+            const grandTotalElement = document.querySelector('tbody tr:last-child td span');
+            grandTotalElement.textContent = formatCurrency(grandTotal);
+        }
+
+
+        // Hàm định dạng số tiền thành chuỗi có dấu ngăn cách hàng nghìn
+        function formatCurrency(amount) {
+            return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+    </script>
+
+</body>
+
+</html>
